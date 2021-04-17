@@ -39,11 +39,16 @@ AccountService.create = async (account) => {
 }
 
 AccountService.delete = async (customerid, accountid) => {
+    const customer = await CustomerRepository.findById(customerid)
+
+    if (customer.length === 0) {
+        throw new Error('Customer does not exist')
+    }
 
     const accounts = await AccountRepository.listAccountsByCustomer(customerid)
     
     if (accounts.length === 0)  {
-        throw new Error('Customer does not exist')
+        throw new Error('Customer does not have accounts')
     }
 
     const account = accounts.find(account => account.id === accountid)
@@ -62,7 +67,7 @@ AccountService.delete = async (customerid, accountid) => {
 AccountService.addAmount = async (customerid, accountid, amount) => {
     const customer = await CustomerRepository.findById(customerid)
 
-    if (customer.id === 0) {
+    if (customer.length === 0) {
         throw new Error('Customer does not exist')
     }
 
@@ -91,7 +96,7 @@ AccountService.subtractAmount = async (customerid, accountid, amount) => {
 
     const customer = await CustomerRepository.findById(customerid)
 
-    if (customer.id === 0) {
+    if (customer.length === 0) {
         throw new Error('Customer does not exist')
     }
     
@@ -108,7 +113,7 @@ AccountService.subtractAmount = async (customerid, accountid, amount) => {
     }
 
     if(amount < 0 || amount > account.amount) {
-        throw new Error('Invalid amount to add')
+        throw new Error('Invalid amount to subtract')
     }
 
     account.amount -= amount
@@ -120,7 +125,7 @@ AccountService.transfereAmount = async (customerid, accountid, amount, targetacc
     
     const customer = await CustomerRepository.findById(customerid)
 
-    if (customer.id === 0) {
+    if (customer.length === 0) {
         throw new Error('Customer does not exist')
     }
     

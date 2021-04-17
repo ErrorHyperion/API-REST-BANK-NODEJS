@@ -23,6 +23,12 @@ CustomerService.edit = async (id, customer) => {
 }
 
 CustomerService.delete = async (id) => {
+    const customer = await CustomerRepository.findById(id)
+
+    if (customer.length === 0) {
+        throw new Error('Customer does not exist')
+    }
+
     const customerAccounts = await AccountRepository.listAccountsByCustomer(id)
 
     if(customerAccounts.length > 0) {
